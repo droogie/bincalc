@@ -272,7 +272,6 @@ void BinCalc::BuildBitsWindows() {
 
     for (uint32_t i=0; i < ARRAYSIZE(g_y_bytes); i++) {
         g_y_bytes[i]->setSpacing(0);
-        g_y_bytes[i]->setMargin(0);
         g_y_bytes[i]->setObjectName((QString) "y_byte_" + QString::number(i));
 
         for (int z=0; z<8; z++) {
@@ -284,7 +283,6 @@ void BinCalc::BuildBitsWindows() {
 
     for (uint32_t i=0; i < ARRAYSIZE(g_x_bytes); i++) {
         g_x_bytes[i]->setSpacing(0);
-        g_x_bytes[i]->setMargin(0);
         g_x_bytes[i]->setObjectName((QString) "x_byte_" + QString::number(i));
 
         for (int z=0; z < 8; z++) {
@@ -348,18 +346,17 @@ void BinCalc::InitializeInputs() {
     QRegularExpression rg_hex32("[0-9a-f]{0,8}");
     QRegularExpression rg_int64("-?[0-9]{0,19}");
     QRegularExpression rg_int32("-?[0-9]{0,10}");
-    //QRegularExpression rg_float64("[-+]?[0-9]*\\.?[0-9]+");
-    //QRegularExpression rg_float32("-?[0-9\\.]{0,10}");
+    QRegularExpression rg_float64("[-+]?[0-9]*\\.?[0-9]+");
     QRegularExpression rg_chars("[ -~]{0,8}"); // all ascii characters
-    QValidator *hexValidator;
-    QValidator *intValidator;
-    //QValidator *floatValidator;
+    QValidator *hexValidator = new QRegularExpressionValidator(rg_hex64, this);
+    QValidator *intValidator = new QRegularExpressionValidator(rg_int64, this);
     QValidator *charValidator = new QRegularExpressionValidator(rg_chars, this);
+    QValidator *floatValidator = new QRegularExpressionValidator(rg_float64, this);
     ui->input_x_hex->setValidator(hexValidator);
     ui->input_x_int->setValidator(intValidator);
     ui->input_x_uint->setValidator(intValidator);
     ui->input_x_octal->setValidator(intValidator);
-    //ui->input_x_float->setValidator(floatValidator);
+    ui->input_x_float->setValidator(floatValidator);
     ui->input_x_chars->setValidator(charValidator);
 }
 
