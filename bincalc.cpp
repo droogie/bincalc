@@ -25,7 +25,7 @@ enum g_button_enum { button_add,
                      button_stack_down,
                      button_stack_swap,
                      button_enter,
-                     button_clear
+                     button_clear,
                    };
 
 enum g_input_enum {
@@ -162,6 +162,10 @@ bool BinCalc::eventFilter(QObject *object, QEvent *event) {
             case Qt::Key_End:
                 ui->button_stack_swap->animateClick();
                 return true;
+
+            case Qt::Key_AsciiTilde:
+                ui->button_not->animateClick();
+                return true;
         }
     }
 
@@ -188,6 +192,7 @@ void BinCalc::paintEvent(QPaintEvent *event)
         if (z > 9) {
             z = 0;
         }
+
         painter.drawText(x_pos, QString::number(z));
         painter.drawText(y_pos, QString::number(z));
         z++;
@@ -645,6 +650,8 @@ void BinCalc::UpdateXDisplay(uint64_t value) {
             for (int i = 0; i < 8; i++) {
                     if(isprint(buf[i])) {
                         ascii[c++] =  buf[i];
+                    } else {
+                        ascii[c++] = '.';
                     }
             }
 
