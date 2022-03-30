@@ -51,9 +51,6 @@
     </item>
     <item row="0" column="1">
      <layout class="QGridLayout" name="y_display_window">
-      <property name="verticalSpacing">
-       <number>6</number>
-      </property>
       <item row="2" column="1">
        <widget class="QLineEdit" name="input_y_fixed">
         <property name="enabled">
@@ -273,21 +270,6 @@
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>60</number>
-      </property>
-      <property name="spacing">
-       <number>6</number>
-      </property>
       <item row="0" column="1">
        <widget class="QPushButton" name="button_subtract">
         <property name="focusPolicy">
@@ -372,177 +354,184 @@
     </item>
     <item row="0" column="3">
      <layout class="QGridLayout" name="stack_window">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="input_stack_x">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLineEdit {
-	color: black;
-}</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_stack_z">
-        <property name="maximumSize">
-         <size>
-          <width>10</width>
-          <height>32</height>
-         </size>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <property name="text">
-         <string>Z</string>
+        <property name="rightMargin">
+         <number>100</number>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="input_stack_t">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLineEdit {
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>T</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="input_stack_t">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
 	color: black;
 }</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_stack_y">
-        <property name="maximumSize">
-         <size>
-          <width>10</width>
-          <height>32</height>
-         </size>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <property name="text">
-         <string>Y</string>
+        <property name="rightMargin">
+         <number>100</number>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="input_stack_z">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLineEdit {
+        <item>
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Z</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="input_stack_z">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
 	color: black;
 }</string>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_stack_t">
-        <property name="maximumSize">
-         <size>
-          <width>10</width>
-          <height>32</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>T</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item row="3" column="0">
-       <widget class="QLabel" name="label_stack_x">
-        <property name="maximumSize">
-         <size>
-          <width>10</width>
-          <height>32</height>
-         </size>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <property name="text">
-         <string>X</string>
+        <property name="rightMargin">
+         <number>100</number>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="input_stack_y">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>150</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QLineEdit {
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Y</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="input_stack_y">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
 	color: black;
 }</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="leftMargin">
+         <number>0</number>
         </property>
-        <property name="readOnly">
-         <bool>true</bool>
+        <property name="rightMargin">
+         <number>100</number>
         </property>
-       </widget>
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>X</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="input_stack_x">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>150</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="focusPolicy">
+           <enum>Qt::NoFocus</enum>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	color: black;
+}</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -567,8 +556,16 @@
       </item>
       <item row="3" column="3">
        <widget class="QLineEdit" name="input_x_float">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::ClickFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QLineEdit {
+               color: black;
+       }</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -698,7 +695,7 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="1" colspan="2">
+    <item row="3" column="1">
      <widget class="QWidget" name="x_binary_window" native="true">
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
@@ -721,12 +718,6 @@
         <layout class="QHBoxLayout" name="x_bits_window">
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
          </property>
         </layout>
        </item>
@@ -751,7 +742,7 @@
          <property name="maximumSize">
           <size>
            <width>32</width>
-           <height>16</height>
+           <height>24</height>
           </size>
          </property>
          <property name="focusPolicy">
@@ -801,28 +792,72 @@
     </item>
     <item row="1" column="1">
      <widget class="QWidget" name="y_binary_window" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_11">
+      <layout class="QHBoxLayout" name="y_constraints_window">
        <item>
-        <layout class="QHBoxLayout" name="y_bits_window">
-         <property name="leftMargin">
-          <number>37</number>
+        <widget class="QPushButton" name="padding_0">
+         <property name="enabled">
+          <bool>false</bool>
          </property>
-         <property name="rightMargin">
-          <number>71</number>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>24</height>
+          </size>
          </property>
-        </layout>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>&lt;&lt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="y_bits_window"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="padding_1">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>&gt;&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="padding_2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>32</width>
+           <height>24</height>
+          </size>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>~</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
     </item>
     <item row="3" column="3">
      <layout class="QGridLayout" name="x_options_window">
-      <property name="leftMargin">
-       <number>100</number>
-      </property>
-      <property name="bottomMargin">
-       <number>25</number>
-      </property>
       <item row="2" column="1">
        <layout class="QHBoxLayout" name="bit_selection_window">
         <item>

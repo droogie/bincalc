@@ -65,6 +65,7 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->input_y_fract->setEnabled(false);
     // issues with float input... set RO
     ui->input_x_float->setReadOnly(true);
+    ui->input_x_float->setEnabled(false);
     ////
 
     BuildBitsWindows();
@@ -184,9 +185,10 @@ void BinCalc::paintEvent(QPaintEvent *event)
         QPoint x_pos = g_x_bits[63-i]->pos();
         QPoint y_pos = g_x_bits[63-i]->pos();
         x_pos.setX(x_pos.x() + 48);
-        x_pos.setY(x_pos.y() + 445);
+        x_pos.setY(x_pos.y() + 465);
+        
         y_pos.setX(y_pos.x() + 48);
-        y_pos.setY(y_pos.y() + 180);
+        y_pos.setY(y_pos.y() + 205);
 
         // draw bottom row
         if (z > 9) {
@@ -223,6 +225,24 @@ void BinCalc::paintEvent(QPaintEvent *event)
 }
 
 void BinCalc::BuildBitsWindows() {
+    // this is a hack to make the y-bits-window match the same width
+    // as the x-bits-window. I just add push buttons same properties of 
+    // the <<, >>, ~ buttons and hide them
+    QSizePolicy sp_retain = ui->padding_0->sizePolicy();
+    sp_retain.setRetainSizeWhenHidden(true);
+    ui->padding_0->setSizePolicy(sp_retain);
+    ui->padding_0->setVisible(false);
+
+    sp_retain = ui->padding_1->sizePolicy();
+    sp_retain.setRetainSizeWhenHidden(true);
+    ui->padding_1->setSizePolicy(sp_retain);
+    ui->padding_1->setVisible(false);
+
+    sp_retain = ui->padding_2->sizePolicy();
+    sp_retain.setRetainSizeWhenHidden(true);
+    ui->padding_2->setSizePolicy(sp_retain);
+    ui->padding_2->setVisible(false);
+
     for (int i=0; i < 64; i++) {
         g_y_bits[i] = new QCheckBox();
         g_y_bits[i]->setStyleSheet(""
@@ -328,29 +348,18 @@ void BinCalc::InitializeInputs() {
     QRegularExpression rg_hex32("[0-9a-f]{0,8}");
     QRegularExpression rg_int64("-?[0-9]{0,19}");
     QRegularExpression rg_int32("-?[0-9]{0,10}");
-    QRegularExpression rg_float64("-?[0-9\\.]{0,19}");
-    QRegularExpression rg_float32("-?[0-9\\.]{0,10}");
+    //QRegularExpression rg_float64("[-+]?[0-9]*\\.?[0-9]+");
+    //QRegularExpression rg_float32("-?[0-9\\.]{0,10}");
     QRegularExpression rg_chars("[ -~]{0,8}"); // all ascii characters
     QValidator *hexValidator;
     QValidator *intValidator;
-    QValidator *floatValidator;
+    //QValidator *floatValidator;
     QValidator *charValidator = new QRegularExpressionValidator(rg_chars, this);
-    // fix this, need to keep setting new validator
-//    if (ui->radio_bit_64->isChecked()) {
-        hexValidator = new QRegularExpressionValidator(rg_hex64, this);
-        intValidator = new QRegularExpressionValidator(rg_int64, this);
-        floatValidator = new QRegularExpressionValidator(rg_float64, this);
-//    } else {
-//        hexValidator = new QRegularExpressionValidator(rg_hex32, this);
-//        intValidator = new QRegularExpressionValidator(rg_int32, this);
-//        floatValidator = new QRegularExpressionValidator(rg_float32, this);
-//    }
-
     ui->input_x_hex->setValidator(hexValidator);
     ui->input_x_int->setValidator(intValidator);
     ui->input_x_uint->setValidator(intValidator);
     ui->input_x_octal->setValidator(intValidator);
-    ui->input_x_float->setValidator(floatValidator);
+    //ui->input_x_float->setValidator(floatValidator);
     ui->input_x_chars->setValidator(charValidator);
 }
 
@@ -485,6 +494,7 @@ void BinCalc::SwapEndianDisplay() {
 
 void BinCalc::BitsSettingToggled(bool on) {
     if (!on) return;
+
     UpdateXDisplay(ui->input_x_int->text().toLongLong());
     UpdateYDisplay(ui->input_y_int->text().toLongLong());
 }
@@ -709,7 +719,13 @@ void BinCalc::UpdateBitsDisplay() {
         if(bit_32 && i > 31) {
             g_x_bits[63-i]->setChecked(false);
             g_y_bits[63-i]->setChecked(false);
+            g_x_bits[63-i]->setEnabled(false);
             continue;
+        }
+
+        // re-enable checkboxes if 64bit
+        if(!bit_32 && i > 31) {
+            g_x_bits[63-i]->setEnabled(true);
         }
 
         if (IsBitSet(ui->input_x_int->text().toLongLong(), i)) {
