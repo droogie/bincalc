@@ -48,6 +48,7 @@ QCheckBox *g_y_bits[64];
 QHBoxLayout *g_x_bytes[8];
 QHBoxLayout *g_y_bytes[8];
 QRadioButton *g_last_button; // gross workaround because I'm stupid....
+QLineEdit *g_last_modified = NULL;
 
 BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->setupUi(this);
@@ -64,8 +65,8 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->input_y_fixed->setEnabled(false);
     ui->input_y_fract->setEnabled(false);
     // issues with float input... set RO
-    ui->input_x_float->setReadOnly(true);
-    ui->input_x_float->setEnabled(false);
+    // ui->input_x_float->setReadOnly(true);
+    // ui->input_x_float->setEnabled(false);
     ////
 
     BuildBitsWindows();
@@ -137,11 +138,13 @@ bool BinCalc::eventFilter(QObject *object, QEvent *event) {
                 return true;
 
             case Qt::Key_Minus:
-                ui->button_subtract->animateClick();
+                // removed so you can type `-` for negative numbers
+                //ui->button_subtract->animateClick();
                 return true;
 
             case Qt::Key_Plus:
-                ui->button_add->animateClick();
+                // removed so you can type `+` for float input
+                //ui->button_add->animateClick();
                 return true;
 
             case Qt::Key_PageDown:
@@ -423,12 +426,12 @@ void BinCalc::ButtonPressed() {
     case button_shift_left:
         UpdateXDisplay(x << 1);
         UpdateYDisplay(0);
-        return;
+        break;
 
     case button_shift_right:
         UpdateXDisplay(x >> 1);
         UpdateYDisplay(0);
-        return;
+        break;
 
     case button_stack_up:
         ui->input_stack_t->setText(QString::number(z));
@@ -452,7 +455,7 @@ void BinCalc::ButtonPressed() {
 
     case button_enter:
         UpdateYDisplay(x);
-        return;
+        break;
 
     case button_clear:
         // clear rest of stack
@@ -465,6 +468,12 @@ void BinCalc::ButtonPressed() {
     default:
         printf("case: %d, %s\n", g_buttonMap[button->objectName()], button->objectName().toUtf8().data());
         break;
+    }
+
+    if (g_last_modified) {
+        g_last_modified->selectAll();
+    } else {
+        ui->input_x_int->selectAll();
     }
 }
 
@@ -540,6 +549,8 @@ void BinCalc::InputChanged(const QString &input) {
     // loop through all inputs and check which was modified
     for (uint32_t i=0; i < ARRAYSIZE(g_x_inputs); i++) {
         if (g_x_inputs[i]->isModified()) {
+            g_last_modified = g_x_inputs[i];
+
             switch(g_inputMap[g_x_inputs[i]->objectName()]) {
             case input_int:
                 UpdateXDisplay(input.toLongLong());
@@ -605,65 +616,73 @@ void BinCalc::UpdateXDisplay(uint64_t value) {
 
     // update input fields
     for (uint32_t i=0; i < ARRAYSIZE(g_x_inputs); i++) {
-        switch(g_inputMap[g_x_inputs[i]->objectName()]) {
-        case input_int:
-            if (bit_32) {
-                g_x_inputs[i]->setText(QString::number((int32_t)value));
-                ui->input_stack_x->setText(QString::number((int32_t)value));
-            } else {
-                g_x_inputs[i]->setText(QString::number((int64_t)value));
-                ui->input_stack_x->setText(QString::number((int64_t)value));
-            }
-            break;
-
-        case input_uint:
-            g_x_inputs[i]->setText(QString::number(value));
-            break;
-
-        case input_hex:
-            g_x_inputs[i]->setText(QString::number(value, 16));
-            break;
-
-        case input_octal:
-            g_x_inputs[i]->setText(QString::number(value, 8));
-            break;
-
-        case input_float:
-            g_x_inputs[i]->setText(QString::number(double(value), 'G', 16));
-            break;
-
-        case input_fixed:
-            //typedef numeric::fixed<64, 64> fixed;
-            //fixed f = (fixed)value;
-            //uint64_t integer = f.data_ & f.integer_mask;
-            //uint64_t fractional = f.data_ & f.fractional_mask;
-            //g_x_inputs[i]->setText(QString::number(integer) + "." + QString::number(fractional));
-            //g_x_inputs[i]->setText(QString::number((qlonglong)f.data_));
-            g_x_inputs[i]->setText("N/A");
-            break;
-
-        case input_fract:
-            g_x_inputs[i]->setText("N/A");
-            break;
-
-        case input_chars:
-            if(g_x_inputs[i]->isModified())
+        // don't update current input being typed
+        if (!g_x_inputs[i]->isModified()) { 
+            switch(g_inputMap[g_x_inputs[i]->objectName()]) {
+            case input_int:
+                if (bit_32) {
+                    g_x_inputs[i]->setText(QString::number((int32_t)value));
+                    ui->input_stack_x->setText(QString::number((int32_t)value));
+                } else {
+                    g_x_inputs[i]->setText(QString::number((int64_t)value));
+                    ui->input_stack_x->setText(QString::number((int64_t)value));
+                }
                 break;
 
-            char ascii[9] = {0};
-            unsigned char buf[8] = {};
-            unsigned int c = 0;
-            convertToCharArray(buf, value);
-            for (int i = 0; i < 8; i++) {
-                    if(isprint(buf[i])) {
-                        ascii[c++] =  buf[i];
-                    } else {
-                        ascii[c++] = '.';
-                    }
-            }
+            case input_uint:
+                g_x_inputs[i]->setText(QString::number(value));
+                break;
 
-            ui->input_x_chars->setText(ascii);
-            break;
+            case input_hex:
+                if (bit_32) {
+                    g_x_inputs[i]->setText(QString::number(value, 16).rightJustified(8, '0'));
+                } else {
+                    g_x_inputs[i]->setText(QString::number(value, 16).rightJustified(16, '0'));
+                }
+                break;
+
+            case input_octal:
+                g_x_inputs[i]->setText(QString::number(value, 8));
+                break;
+
+            case input_float:
+                //g_x_inputs[i]->setText(QString("%1").arg(value, 2, 10, QChar('0'));
+                g_x_inputs[i]->setText(QString::number(double(value), 'G', 16));
+                break;
+
+            case input_fixed:
+                //typedef numeric::fixed<64, 64> fixed;
+                //fixed f = (fixed)value;
+                //uint64_t integer = f.data_ & f.integer_mask;
+                //uint64_t fractional = f.data_ & f.fractional_mask;
+                //g_x_inputs[i]->setText(QString::number(integer) + "." + QString::number(fractional));
+                //g_x_inputs[i]->setText(QString::number((qlonglong)f.data_));
+                g_x_inputs[i]->setText("N/A");
+                break;
+
+            case input_fract:
+                g_x_inputs[i]->setText("N/A");
+                break;
+
+            case input_chars:
+                if(g_x_inputs[i]->isModified())
+                    break;
+
+                char ascii[9] = {0};
+                unsigned char buf[8] = {};
+                unsigned int c = 0;
+                convertToCharArray(buf, value);
+                for (int i = 0; i < 8; i++) {
+                        if(isprint(buf[i])) {
+                            ascii[c++] =  buf[i];
+                        } else {
+                            ascii[c++] = '.';
+                        }
+                }
+
+                ui->input_x_chars->setText(ascii);
+                break;
+            }
         }
     }
 
