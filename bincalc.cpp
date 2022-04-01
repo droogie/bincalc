@@ -420,17 +420,14 @@ void BinCalc::ButtonPressed() {
 
     case button_not:
         UpdateXDisplay(~x);
-        UpdateYDisplay(0);
         break;
 
     case button_shift_left:
         UpdateXDisplay(x << 1);
-        UpdateYDisplay(0);
         break;
 
     case button_shift_right:
         UpdateXDisplay(x >> 1);
-        UpdateYDisplay(0);
         break;
 
     case button_stack_up:
@@ -646,8 +643,7 @@ void BinCalc::UpdateXDisplay(uint64_t value) {
                 break;
 
             case input_float:
-                //g_x_inputs[i]->setText(QString("%1").arg(value, 2, 10, QChar('0'));
-                g_x_inputs[i]->setText(QString::number(double(value), 'G', 16));
+                g_x_inputs[i]->setText(QString::number(value, 'g', 6));
                 break;
 
             case input_fixed:
@@ -710,12 +706,25 @@ void BinCalc::UpdateYDisplay(uint64_t value) {
     ui->input_y_uint->setText(QString::number(value));
     ui->input_y_hex->setText(QString::number(value, 16));
     ui->input_y_octal->setText(QString::number(value, 8));
-    ui->input_y_float->setText(QString::number(double(value), 'g', 16));
+    ui->input_y_float->setText(QString::number(value, 'g', 6));
     ui->input_y_fixed->setText("N/A");
     ui->input_y_fract->setText("N/A");
 
-    std::string string(reinterpret_cast<const char *>(&value), sizeof(value));
-    ui->input_y_chars->setText(QString().fromStdString(string));
+    char ascii[9] = {0};
+    unsigned char buf[8] = {};
+    unsigned int c = 0;
+    convertToCharArray(buf, value);
+    for (int i = 0; i < 8; i++) {
+            if(isprint(buf[i])) {
+                ascii[c++] =  buf[i];
+            } else {
+                ascii[c++] = '.';
+            }
+    }
+
+    // std::string string(reinterpret_cast<const char *>(&value), sizeof(value));
+    // ui->input_y_chars->setText(QString().fromStdString(string));
+    ui->input_y_chars->setText(ascii);
 
     UpdateBitsDisplay();
 }
