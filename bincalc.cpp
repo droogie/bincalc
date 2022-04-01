@@ -49,6 +49,14 @@ QHBoxLayout *g_x_bytes[8];
 QHBoxLayout *g_y_bytes[8];
 QRadioButton *g_last_button; // gross workaround because I'm stupid....
 QLineEdit *g_last_modified = NULL;
+bool g_force = false;
+
+uint64_t swap_uint64( uint64_t val )
+{
+    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
+    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
+    return (val << 32) | (val >> 32);
+}
 
 BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->setupUi(this);
@@ -492,6 +500,15 @@ void BinCalc::SwapEndianDisplay() {
         ui->y_bits_window->addLayout(g_y_bytes[i]);
     }
 
+    // force bool allows us to force update all fields on the toggle of radio
+    // button, instead of restricting to update the last edited field. The 
+    // we avoid updating the last modified field is to avoid making changes
+    // to the current input field while user is typing in it.
+    g_force = true;
+    uint64_t value = ui->input_x_uint->text().toULongLong();
+    UpdateXDisplay(swap_uint64(value));
+    g_force = false;
+
     ui->mainwidget->update();
 }
 
@@ -545,7 +562,7 @@ void BinCalc::InputChanged(const QString &input) {
 
     // loop through all inputs and check which was modified
     for (uint32_t i=0; i < ARRAYSIZE(g_x_inputs); i++) {
-        if (g_x_inputs[i]->isModified()) {
+        if (g_x_inputs[i]->isModified() || g_force) {
             g_last_modified = g_x_inputs[i];
 
             switch(g_inputMap[g_x_inputs[i]->objectName()]) {
@@ -614,7 +631,7 @@ void BinCalc::UpdateXDisplay(uint64_t value) {
     // update input fields
     for (uint32_t i=0; i < ARRAYSIZE(g_x_inputs); i++) {
         // don't update current input being typed
-        if (!g_x_inputs[i]->isModified()) { 
+        if (!g_x_inputs[i]->isModified() || g_force) { 
             switch(g_inputMap[g_x_inputs[i]->objectName()]) {
             case input_int:
                 if (bit_32) {
