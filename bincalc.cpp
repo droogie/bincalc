@@ -6,6 +6,8 @@
 #include <QKeyEvent>
 #include <map>
 #include <unistd.h>
+#include <QList>
+#include <QScreen>
 
 #define ARRAYSIZE(arr) (sizeof(arr) / sizeof(arr[0]))
 #define UNUSED(expr) do { (void)(expr); } while (0)
@@ -61,10 +63,22 @@ uint64_t swap_uint64( uint64_t val )
 BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->setupUi(this);
 
+    // //QList<QScreen> screens = QGuiApplication::screens();
+    // const auto screens = QGuiApplication::screens();
+    // for (int i=0; i < screens.count(); i++) {
+    //     printf("%d x %d\n", screens[i]->geometry().x(), screens[i]->geometry().y());
+    // }
+    
     QApplication::instance()->installEventFilter(this);
 
     setWindowTitle("Binary Calculator");
     setFixedSize(width()*2, height());
+
+    // printf("x: %d y: %d\n", QApplication::primaryScreen()->geometry().x(), QApplication::primaryScreen()->geometry().y());
+    // printf("%d x %d\n", QApplication::primaryScreen()->geometry().width(), QApplication::primaryScreen()->geometry().height());
+    // printf("x: %d y: %d\n", QMainWindow::x(), QMainWindow::y());
+    // printf("x: %d y: %d\n", QMainWindow::mapToParent(QMainWindow::pos()).x(), QMainWindow::mapToParent(QMainWindow::pos()).y());
+    // printf("%d x %d\n", QMainWindow::width(), QMainWindow::height());
 
     //// TODO: fix these, maybe??
     // disabled until decide on if wanted or not...
@@ -193,8 +207,12 @@ void BinCalc::paintEvent(QPaintEvent *event)
 
     uint64_t z = 0;
     for (uint32_t i=0; i < 64; i++) {
+        // QPoint x_pos = g_x_bits[63-i]->mapToGlobal(QMainWindow::pos());
+        // QPoint y_pos = g_y_bits[63-i]->mapToGlobal(QPoint(0, 0));
+        // printf("x: %d y: %d\n", x_pos.x(), x_pos.y());
         QPoint x_pos = g_x_bits[63-i]->pos();
-        QPoint y_pos = g_x_bits[63-i]->pos();
+        QPoint y_pos = g_y_bits[63-i]->pos();
+
         x_pos.setX(x_pos.x() + 48);
         x_pos.setY(x_pos.y() + 465);
         
@@ -381,17 +399,17 @@ void BinCalc::ButtonPressed() {
     switch(g_buttonMap[button->objectName()]) {
 
     case button_add:
-        UpdateXDisplay(y+x);
+        UpdateXDisplay((uint64_t) y+x);
         UpdateYDisplay(0);
         break;
 
     case button_subtract:
-        UpdateXDisplay(y-x);
+        UpdateXDisplay((uint64_t) y-x);
         UpdateYDisplay(0);
         break;
 
     case button_multiply:
-        UpdateXDisplay(y*x);
+        UpdateXDisplay((uint64_t) y*x);
         UpdateYDisplay(0);
         break;
 
@@ -399,22 +417,22 @@ void BinCalc::ButtonPressed() {
         if(!x)
             break;
 
-        UpdateXDisplay(y/x);
+        UpdateXDisplay((uint64_t) y/x);
         UpdateYDisplay(0);
         break;
 
     case button_and:
-        UpdateXDisplay(y&x);
+        UpdateXDisplay((uint64_t) y&x);
         UpdateYDisplay(0);
         break;
 
     case button_or:
-        UpdateXDisplay(y|x);
+        UpdateXDisplay((uint64_t) y|x);
         UpdateYDisplay(0);
         break;
 
     case button_xor:
-        UpdateXDisplay(y^x);
+        UpdateXDisplay((uint64_t) y^x);
         UpdateYDisplay(0);
         break;
 
@@ -422,44 +440,44 @@ void BinCalc::ButtonPressed() {
         if(!x)
             break;
 
-        UpdateXDisplay(y%x);
+        UpdateXDisplay((uint64_t) y%x);
         UpdateYDisplay(0);
         break;
 
     case button_not:
-        UpdateXDisplay(~x);
+        UpdateXDisplay((uint64_t) ~x);
         break;
 
     case button_shift_left:
-        UpdateXDisplay(x << 1);
+        UpdateXDisplay((uint64_t) x << 1);
         break;
 
     case button_shift_right:
-        UpdateXDisplay(x >> 1);
+        UpdateXDisplay((uint64_t) x >> 1);
         break;
 
     case button_stack_up:
         ui->input_stack_t->setText(QString::number(z));
         ui->input_stack_z->setText(QString::number(y));
-        UpdateYDisplay(x);
-        UpdateXDisplay(t);
+        UpdateYDisplay((uint64_t) x);
+        UpdateXDisplay((uint64_t) t);
         break;
 
     case button_stack_down:
         ui->input_stack_t->setText(QString::number(x));
         ui->input_stack_z->setText(QString::number(t));
-        UpdateYDisplay(z);
-        UpdateXDisplay(y);
+        UpdateYDisplay((uint64_t) z);
+        UpdateXDisplay((uint64_t) y);
         break;
 
     case button_stack_swap:
         // swap X and Y
-        UpdateXDisplay(y);
-        UpdateYDisplay(x);
+        UpdateXDisplay((uint64_t) y);
+        UpdateYDisplay((uint64_t) x);
         break;
 
     case button_enter:
-        UpdateYDisplay(x);
+        UpdateYDisplay((uint64_t) x);
         break;
 
     case button_clear:
