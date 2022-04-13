@@ -53,11 +53,19 @@ QRadioButton *g_last_button; // gross workaround because I'm stupid....
 QLineEdit *g_last_modified = NULL;
 bool g_force = false;
 
-uint64_t swap_uint64( uint64_t val )
+
+static uint32_t _swap_uint32(uint32_t _val)
 {
-    val = ((val << 8) & 0xFF00FF00FF00FF00ULL ) | ((val >> 8) & 0x00FF00FF00FF00FFULL );
-    val = ((val << 16) & 0xFFFF0000FFFF0000ULL ) | ((val >> 16) & 0x0000FFFF0000FFFFULL );
-    return (val << 32) | (val >> 32);
+	return (((_val) >> 24) | (((_val)&0x00FF0000) >> 8) | (((_val)&0x0000FF00) << 8) |
+	        ((_val) << 24));
+}
+
+static uint64_t _swap_uint64(uint64_t _val)
+{
+	return (((_val) << 56) | (((_val) << 40) & 0xFF000000000000) |
+	        (((_val) << 24) & 0xFF0000000000) | (((_val) << 8) & 0xFF00000000) |
+	        (((_val) >> 8) & 0xFF000000) | (((_val) >> 24) & 0xFF0000) | (((_val) >> 40) & 0xFF00) |
+	        ((_val) >> 56));
 }
 
 BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
@@ -523,8 +531,16 @@ void BinCalc::SwapEndianDisplay() {
     // we avoid updating the last modified field is to avoid making changes
     // to the current input field while user is typing in it.
     g_force = true;
-    uint64_t value = ui->input_x_uint->text().toULongLong();
-    UpdateXDisplay(swap_uint64(value));
+    uint64_t xvalue = ui->input_x_uint->text().toULongLong();
+    uint64_t yvalue = ui->input_y_uint->text().toULongLong();
+    
+    if (ui->radio_bit_32->isChecked()) {
+        UpdateXDisplay(_swap_uint32(xvalue));
+        UpdateYDisplay(_swap_uint32(yvalue));
+    } else {
+        UpdateXDisplay(_swap_uint64(xvalue));
+        UpdateYDisplay(_swap_uint64(yvalue));
+    }
     g_force = false;
 
     ui->mainwidget->update();
@@ -739,7 +755,13 @@ void BinCalc::UpdateYDisplay(uint64_t value) {
     }
 
     ui->input_y_uint->setText(QString::number(value));
-    ui->input_y_hex->setText(QString::number(value, 16));
+
+    if (ui->radio_bit_32->isChecked()) {
+        ui->input_y_hex->setText(QString::number(value, 16).rightJustified(8, '0'));
+    } else {
+        ui->input_y_hex->setText(QString::number(value, 16).rightJustified(16, '0'));
+    }
+
     ui->input_y_octal->setText(QString::number(value, 8));
     ui->input_y_float->setText(QString::number(value, 'g', 6));
     ui->input_y_fixed->setText("N/A");
