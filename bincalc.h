@@ -37,5 +37,6 @@ private slots:
     void UpdateBitsDisplay();
     void convertToCharArray(uchar *arr, int64_t a);
     void SwapEndianDisplay();
+    void SetInputValidators(bool);
 };
 #endif // BINCALC_H

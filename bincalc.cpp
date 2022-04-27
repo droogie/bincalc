@@ -366,6 +366,46 @@ void BinCalc::InitializeButtons() {
     connect(ui->radio_endian_big, SIGNAL(clicked(bool)), this, SLOT(EndianSettingToggled(bool)));
 }
 
+void BinCalc::SetInputValidators(bool bits64) {
+    QRegularExpression rg_hex64("[0-9a-f]{0,16}");
+    QRegularExpression rg_hex32("[0-9a-f]{0,8}");
+    QRegularExpression rg_int64("-?[0-9]{0,19}");
+    QRegularExpression rg_int32("-?[0-9]{0,10}");
+    QRegularExpression rg_chars64("[ -~]{0,8}"); // all ascii characters
+    QRegularExpression rg_chars32("[ -~]{0,4}"); // all ascii characters
+
+    // need to fix floats
+    QRegularExpression rg_float64("[-+]?[0-9]*\\.?[0-9]+");
+    QRegularExpression rg_float32("[-+]?[0-9]*\\.?[0-9]+");
+
+    
+    QValidator *hexValidator64 = new QRegularExpressionValidator(rg_hex64, this);
+    QValidator *intValidator64 = new QRegularExpressionValidator(rg_int64, this);
+    QValidator *charValidator64 = new QRegularExpressionValidator(rg_chars64, this);
+    QValidator *floatValidator64 = new QRegularExpressionValidator(rg_float64, this);
+    
+    QValidator *hexValidator32 = new QRegularExpressionValidator(rg_hex32, this);
+    QValidator *intValidator32 = new QRegularExpressionValidator(rg_int32, this);
+    QValidator *charValidator32 = new QRegularExpressionValidator(rg_chars32, this);
+    QValidator *floatValidator32 = new QRegularExpressionValidator(rg_float32, this);
+
+    if (bits64) {
+        ui->input_x_hex->setValidator(hexValidator64);
+        ui->input_x_int->setValidator(intValidator64);
+        ui->input_x_uint->setValidator(intValidator64);
+        ui->input_x_octal->setValidator(intValidator64);
+        ui->input_x_float->setValidator(floatValidator64);
+        ui->input_x_chars->setValidator(charValidator64);
+    } else {
+        ui->input_x_hex->setValidator(hexValidator32);
+        ui->input_x_int->setValidator(intValidator32);
+        ui->input_x_uint->setValidator(intValidator32);
+        ui->input_x_octal->setValidator(intValidator32);
+        ui->input_x_float->setValidator(floatValidator32);
+        ui->input_x_chars->setValidator(charValidator32);
+    }
+}
+
 void BinCalc::InitializeInputs() {
     const char *labels[8] = {
         "int", "hex", "fixed", "float",
@@ -379,22 +419,7 @@ void BinCalc::InitializeInputs() {
         connect(g_x_inputs[i], SIGNAL(textEdited(QString)), this, SLOT(InputChanged(QString)));
     }
 
-    QRegularExpression rg_hex64("[0-9a-f]{0,16}");
-    QRegularExpression rg_hex32("[0-9a-f]{0,8}");
-    QRegularExpression rg_int64("-?[0-9]{0,19}");
-    QRegularExpression rg_int32("-?[0-9]{0,10}");
-    QRegularExpression rg_float64("[-+]?[0-9]*\\.?[0-9]+");
-    QRegularExpression rg_chars("[ -~]{0,8}"); // all ascii characters
-    QValidator *hexValidator = new QRegularExpressionValidator(rg_hex64, this);
-    QValidator *intValidator = new QRegularExpressionValidator(rg_int64, this);
-    QValidator *charValidator = new QRegularExpressionValidator(rg_chars, this);
-    QValidator *floatValidator = new QRegularExpressionValidator(rg_float64, this);
-    ui->input_x_hex->setValidator(hexValidator);
-    ui->input_x_int->setValidator(intValidator);
-    ui->input_x_uint->setValidator(intValidator);
-    ui->input_x_octal->setValidator(intValidator);
-    ui->input_x_float->setValidator(floatValidator);
-    ui->input_x_chars->setValidator(charValidator);
+    SetInputValidators(ui->radio_bit_64->isChecked());
 }
 
 void BinCalc::ButtonPressed() {
@@ -551,6 +576,9 @@ void BinCalc::BitsSettingToggled(bool on) {
 
     UpdateXDisplay(ui->input_x_int->text().toLongLong());
     UpdateYDisplay(ui->input_y_int->text().toLongLong());
+
+    // update input validators for 64bit or 32bit lengths
+    SetInputValidators(ui->radio_bit_64->isChecked());
 }
 
 void BinCalc::EndianSettingToggled(bool on) {
