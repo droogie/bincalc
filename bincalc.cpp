@@ -367,8 +367,8 @@ void BinCalc::InitializeButtons() {
 }
 
 void BinCalc::SetInputValidators(bool bits64) {
-    QRegularExpression rg_hex64("[0-9a-f]{0,16}");
-    QRegularExpression rg_hex32("[0-9a-f]{0,8}");
+    QRegularExpression rg_hex64("[0-9a-fA-F]{0,16}");
+    QRegularExpression rg_hex32("[0-9a-fA-F]{0,8}");
     QRegularExpression rg_int64("-?[0-9]{0,19}");
     QRegularExpression rg_int32("-?[0-9]{0,10}");
     QRegularExpression rg_chars64("[ -~]{0,8}"); // all ascii characters
