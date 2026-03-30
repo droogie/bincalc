@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-24.04
+            artifact_name: bincalc-linux
+            package_glob: build/release/bincalc-*-Linux.tar.gz
+          - name: macOS
+            os: macos-14
+            artifact_name: bincalc-macos
+            package_glob: build/release/bincalc-*-Darwin.dmg
+          - name: Windows
+            os: windows-2022
+            artifact_name: bincalc-windows
+            package_glob: build/release/bincalc-*-Windows.zip
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          cache: true
+
+      - name: Configure release build
+        run: cmake -S . -B build/release -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build/release --config Release
+
+      - name: Run tests
+        run: ctest --test-dir build/release -C Release --output-on-failure
+
+      - name: Install staged app
+        run: cmake --install build/release --prefix dist/stage --config Release
+
+      - name: Package archive
+        run: cmake --build build/release --target package --config Release
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.package_glob }}
+          if-no-files-found: error
+
+  publish:
+    name: Publish Release
+    runs-on: ubuntu-24.04
+    needs: build
+
+    steps:
+      - name: Download packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-artifacts/**/*
+          generate_release_notes: true
