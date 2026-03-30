@@ -9,7 +9,6 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <algorithm>
-#include <unistd.h>
 #include <QList>
 #include <QScreen>
 

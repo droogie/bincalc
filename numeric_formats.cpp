@@ -121,8 +121,8 @@ uint64_t parseScaledFixed(const QString &input, bool bit32, int fractionalBits, 
 uint64_t packChars(const QString &input, bool bit32)
 {
     const QByteArray bytes = input.toUtf8();
-    const int maxChars = bit32 ? 4 : 8;
-    const int count = std::min(bytes.size(), maxChars);
+    const qsizetype maxChars = bit32 ? qsizetype(4) : qsizetype(8);
+    const int count = std::min(static_cast<int>(bytes.size()), static_cast<int>(maxChars));
     uint64_t value = 0;
 
     for (int i = 0; i < count; ++i) {
