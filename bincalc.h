@@ -65,6 +65,9 @@ private slots:
     void UpdateStackDisplays();
     int64_t SignedValue(uint64_t) const;
     uint64_t NormalizeValue(uint64_t) const;
+    bool IsDarkTheme() const;
+    void ApplyTheme();
+    void SetupPlatformChrome();
     bool IsXBitCheckbox(QObject *object) const;
     int XBitIndex(QObject *object) const;
     void ApplyDraggedBit(QObject *object);

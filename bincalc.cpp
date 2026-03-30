@@ -5,6 +5,7 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMouseEvent>
+#include <QPalette>
 #include <QRegularExpressionValidator>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -100,25 +101,8 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     const QSize initialSize(width() * 2, height());
     resize(initialSize);
     setMinimumHeight(600);
-    dragHandle_ = new QWidget(this);
-    dragHandle_->setObjectName("drag_handle");
-    dragHandle_->setMinimumHeight(20);
-    dragHandle_->setMaximumHeight(20);
-    dragHandle_->setCursor(Qt::OpenHandCursor);
-    dragHandle_->setStyleSheet(
-        "QWidget#drag_handle {"
-        " background: #d8d8d8;"
-        " border-bottom: 1px solid #a8a8a8;"
-        "}"
-    );
-    auto *dragLayout = new QVBoxLayout(dragHandle_);
-    dragLayout->setContentsMargins(8, 0, 8, 0);
-    QLabel *dragLabel = new QLabel(windowTitle(), dragHandle_);
-    dragLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    dragLayout->addWidget(dragLabel);
-    dragHandle_->installEventFilter(this);
-    dragLabel->installEventFilter(this);
-    setMenuWidget(dragHandle_);
+    SetupPlatformChrome();
+    ApplyTheme();
 
     // printf("x: %d y: %d\n", QApplication::primaryScreen()->geometry().x(), QApplication::primaryScreen()->geometry().y());
     // printf("%d x %d\n", QApplication::primaryScreen()->geometry().width(), QApplication::primaryScreen()->geometry().height());
@@ -805,6 +789,56 @@ int64_t BinCalc::SignedValue(uint64_t value) const {
 
 uint64_t BinCalc::NormalizeValue(uint64_t value) const {
     return core_.normalize(value);
+}
+
+bool BinCalc::IsDarkTheme() const {
+    const QColor windowColor = palette().color(QPalette::Window);
+    return windowColor.lightness() < 128;
+}
+
+void BinCalc::ApplyTheme() {
+    if (!IsDarkTheme()) {
+        return;
+    }
+
+    setStyleSheet(
+        "QMainWindow { background-color: #1f1f1f; color: #e8e8e8; }"
+        "QWidget { color: #e8e8e8; }"
+        "QGroupBox { border: 1px solid #4a4a4a; margin-top: 10px; }"
+        "QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }"
+        "QLineEdit { background-color: #2a2a2a; color: #f0f0f0; border: 1px solid #555555; selection-background-color: #4d78cc; }"
+        "QLineEdit:disabled { background-color: #232323; color: #9a9a9a; border-color: #404040; }"
+        "QPushButton { background-color: #303030; color: #f0f0f0; border: 1px solid #555555; padding: 3px 8px; }"
+        "QPushButton:hover { background-color: #3a3a3a; }"
+        "QPushButton:pressed { background-color: #252525; }"
+        "QRadioButton::indicator, QCheckBox::indicator { background-color: #2a2a2a; border: 1px solid #777777; }"
+        "QCheckBox::indicator:disabled { background-color: #202020; border-color: #4d4d4d; }"
+        "QWidget#drag_handle { background: #2b2b2b; border-bottom: 1px solid #4a4a4a; }"
+    );
+}
+
+void BinCalc::SetupPlatformChrome() {
+#ifdef Q_OS_LINUX
+    dragHandle_ = new QWidget(this);
+    dragHandle_->setObjectName("drag_handle");
+    dragHandle_->setMinimumHeight(20);
+    dragHandle_->setMaximumHeight(20);
+    dragHandle_->setCursor(Qt::OpenHandCursor);
+    dragHandle_->setStyleSheet(
+        "QWidget#drag_handle {"
+        " background: #d8d8d8;"
+        " border-bottom: 1px solid #a8a8a8;"
+        "}"
+    );
+    auto *dragLayout = new QVBoxLayout(dragHandle_);
+    dragLayout->setContentsMargins(8, 0, 8, 0);
+    QLabel *dragLabel = new QLabel(windowTitle(), dragHandle_);
+    dragLabel->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    dragLayout->addWidget(dragLabel);
+    dragHandle_->installEventFilter(this);
+    dragLabel->installEventFilter(this);
+    setMenuWidget(dragHandle_);
+#endif
 }
 
 bool BinCalc::IsXBitCheckbox(QObject *object) const {
