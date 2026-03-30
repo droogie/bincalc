@@ -70,4 +70,11 @@ Thumbs.db
 # --------
 *.dll
 *.exe
-
+bincalc
+bincalc_tests
+build/
+dist/
+release/
+.vscode/
+moc_predefs.h
+.qmake.stash

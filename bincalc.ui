@@ -697,8 +697,14 @@
     </item>
     <item row="3" column="1">
      <widget class="QWidget" name="x_binary_window" native="true">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
-       <item>
+      <layout class="QGridLayout" name="horizontalLayout_5">
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="x_bit_labels_top"/>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="x_bit_labels_bottom"/>
+       </item>
+       <item row="2" column="0">
         <widget class="QPushButton" name="button_shift_left">
          <property name="maximumSize">
           <size>
@@ -714,14 +720,14 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="1">
         <layout class="QHBoxLayout" name="x_bits_window">
          <property name="sizeConstraint">
           <enum>QLayout::SetDefaultConstraint</enum>
          </property>
         </layout>
        </item>
-       <item>
+       <item row="2" column="2">
         <widget class="QPushButton" name="button_shift_right">
          <property name="maximumSize">
           <size>
@@ -737,7 +743,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="2" column="3">
         <widget class="QPushButton" name="button_not">
          <property name="maximumSize">
           <size>
@@ -792,66 +798,54 @@
     </item>
     <item row="1" column="1">
      <widget class="QWidget" name="y_binary_window" native="true">
-      <layout class="QHBoxLayout" name="y_constraints_window">
-       <item>
-        <widget class="QPushButton" name="padding_0">
-         <property name="enabled">
-          <bool>false</bool>
+      <layout class="QGridLayout" name="y_constraints_window">
+       <item row="0" column="1">
+        <layout class="QHBoxLayout" name="y_bit_labels_top"/>
+       </item>
+       <item row="1" column="1">
+        <layout class="QHBoxLayout" name="y_bit_labels_bottom"/>
+       </item>
+       <item row="2" column="0">
+        <spacer name="y_controls_spacer_left">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="maximumSize">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>32</width>
            <height>24</height>
           </size>
          </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string>&lt;&lt;</string>
-         </property>
-        </widget>
+        </spacer>
        </item>
-       <item>
+       <item row="2" column="1">
         <layout class="QHBoxLayout" name="y_bits_window"/>
        </item>
-       <item>
-        <widget class="QPushButton" name="padding_1">
-         <property name="enabled">
-          <bool>false</bool>
+       <item row="2" column="2">
+        <spacer name="y_controls_spacer_right">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="maximumSize">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>32</width>
            <height>24</height>
           </size>
          </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string>&gt;&gt;</string>
-         </property>
-        </widget>
+        </spacer>
        </item>
-       <item>
-        <widget class="QPushButton" name="padding_2">
-         <property name="enabled">
-          <bool>false</bool>
+       <item row="2" column="3">
+        <spacer name="y_controls_spacer_not">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-         <property name="maximumSize">
+         <property name="sizeHint" stdset="0">
           <size>
            <width>32</width>
            <height>24</height>
           </size>
          </property>
-         <property name="focusPolicy">
-          <enum>Qt::NoFocus</enum>
-         </property>
-         <property name="text">
-          <string>~</string>
-         </property>
-        </widget>
+        </spacer>
        </item>
       </layout>
      </widget>

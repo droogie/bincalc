@@ -9,10 +9,14 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    calculator_core.cpp \
+    numeric_formats.cpp \
     main.cpp \
     bincalc.cpp
 
 HEADERS += \
+    calculator_core.h \
+    numeric_formats.h \
     bincalc.h
 
 FORMS += \
@@ -25,3 +29,13 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     resources.qrc
+
+QMAKE_CLEAN += \
+    bincalc \
+    bincalc_tests \
+    tests.o \
+    Makefile.tests
+
+clean_repo.commands = rm -rf release build dist
+clean.depends += clean_repo
+QMAKE_EXTRA_TARGETS += clean_repo
