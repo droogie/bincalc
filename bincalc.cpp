@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QPalette>
 #include <QRegularExpressionValidator>
+#include <QStyleFactory>
 #include <QVBoxLayout>
 #include <QWidget>
 #include <algorithm>
@@ -98,8 +99,6 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     QApplication::instance()->installEventFilter(this);
 
     setWindowTitle("Binary Calculator");
-    const QSize initialSize(width() * 2, height());
-    resize(initialSize);
     setMinimumHeight(600);
     SetupPlatformChrome();
     ApplyTheme();
@@ -110,13 +109,29 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     // printf("x: %d y: %d\n", QMainWindow::mapToParent(QMainWindow::pos()).x(), QMainWindow::mapToParent(QMainWindow::pos()).y());
     // printf("%d x %d\n", QMainWindow::width(), QMainWindow::height());
 
-    //// TODO: fix these, maybe??
-    ui->input_y_fixed->setEnabled(false);
-    ui->input_y_fract->setEnabled(false);
-    // issues with float input... set RO
-    // ui->input_x_float->setReadOnly(true);
-    // ui->input_x_float->setEnabled(false);
-    ////
+    auto makeDisplayOnly = [this](QLineEdit *input) {
+        input->setEnabled(true);
+        input->setReadOnly(true);
+        input->setFocusPolicy(Qt::NoFocus);
+        QPalette fieldPalette = input->palette();
+        const QColor baseColor = palette().color(QPalette::Base);
+        const int factor = IsDarkTheme() ? 115 : 106;
+        fieldPalette.setColor(QPalette::Base, baseColor.darker(factor));
+        input->setPalette(fieldPalette);
+    };
+
+    makeDisplayOnly(ui->input_y_int);
+    makeDisplayOnly(ui->input_y_hex);
+    makeDisplayOnly(ui->input_y_fixed);
+    makeDisplayOnly(ui->input_y_float);
+    makeDisplayOnly(ui->input_y_uint);
+    makeDisplayOnly(ui->input_y_octal);
+    makeDisplayOnly(ui->input_y_fract);
+    makeDisplayOnly(ui->input_y_chars);
+    makeDisplayOnly(ui->input_stack_x);
+    makeDisplayOnly(ui->input_stack_y);
+    makeDisplayOnly(ui->input_stack_z);
+    makeDisplayOnly(ui->input_stack_t);
 
     BuildBitsWindows();
     InitializeButtons();
@@ -129,7 +144,9 @@ BinCalc::BinCalc(QWidget *parent): QMainWindow(parent), ui(new Ui::BinCalc) {
     ui->radio_endian_little->click();
     ui->radio_bit_64->setChecked(true);
     ui->button_clear->click();
-    setMinimumSize(sizeHint());
+    const QSize minimumWindowSize = sizeHint();
+    setMinimumSize(minimumWindowSize);
+    resize(minimumWindowSize);
 }
 
 BinCalc::~BinCalc() {
@@ -335,7 +352,7 @@ void BinCalc::BuildBitsWindows() {
 
     for (int i=0; i < 64; i++) {
         yBits_[i] = new QCheckBox();
-        yBits_[i]->setFixedSize(15, 15);
+        yBits_[i]->setFixedSize(17, 17);
         yBits_[i]->setStyleSheet(""
                     "QCheckBox::indicator { width: 15px; height: 15px; }"
                     "QCheckBox::indicator:checked{ image: url(:resources/checked_box.png); }"
@@ -353,7 +370,7 @@ void BinCalc::BuildBitsWindows() {
 
     for (int i=0; i < 64; i++) {
         xBits_[i] = new QCheckBox();
-        xBits_[i]->setFixedSize(15, 15);
+        xBits_[i]->setFixedSize(17, 17);
         xBits_[i]->setStyleSheet(""
                     "QCheckBox::indicator { width: 15px; height: 15px; }"
                     "QCheckBox::indicator:checked{ image: url(:resources/checked_box.png); }"
@@ -801,18 +818,35 @@ void BinCalc::ApplyTheme() {
         return;
     }
 
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
+
+    QPalette darkPalette;
+    darkPalette.setColor(QPalette::Window, QColor(37, 37, 38));
+    darkPalette.setColor(QPalette::WindowText, QColor(240, 240, 240));
+    darkPalette.setColor(QPalette::Base, QColor(30, 30, 30));
+    darkPalette.setColor(QPalette::AlternateBase, QColor(45, 45, 48));
+    darkPalette.setColor(QPalette::ToolTipBase, QColor(45, 45, 48));
+    darkPalette.setColor(QPalette::ToolTipText, QColor(240, 240, 240));
+    darkPalette.setColor(QPalette::Text, QColor(240, 240, 240));
+    darkPalette.setColor(QPalette::Button, QColor(45, 45, 48));
+    darkPalette.setColor(QPalette::ButtonText, QColor(240, 240, 240));
+    darkPalette.setColor(QPalette::BrightText, QColor(255, 90, 90));
+    darkPalette.setColor(QPalette::Highlight, QColor(38, 79, 120));
+    darkPalette.setColor(QPalette::HighlightedText, QColor(255, 255, 255));
+    darkPalette.setColor(QPalette::Mid, QColor(90, 90, 90));
+    darkPalette.setColor(QPalette::Light, QColor(70, 70, 70));
+    darkPalette.setColor(QPalette::Dark, QColor(20, 20, 20));
+    darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, QColor(190, 190, 190));
+    darkPalette.setColor(QPalette::Disabled, QPalette::Text, QColor(190, 190, 190));
+    darkPalette.setColor(QPalette::Disabled, QPalette::ButtonText, QColor(190, 190, 190));
+    darkPalette.setColor(QPalette::Disabled, QPalette::Base, QColor(36, 36, 36));
+    darkPalette.setColor(QPalette::Disabled, QPalette::Button, QColor(55, 55, 55));
+
+    qApp->setPalette(darkPalette);
+
     setStyleSheet(
-        "QMainWindow { background-color: #1f1f1f; color: #e8e8e8; }"
-        "QWidget { color: #e8e8e8; }"
-        "QGroupBox { border: 1px solid #4a4a4a; margin-top: 10px; }"
+        "QGroupBox { border: 1px solid palette(mid); margin-top: 10px; }"
         "QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }"
-        "QLineEdit { background-color: #2a2a2a; color: #f0f0f0; border: 1px solid #555555; selection-background-color: #4d78cc; }"
-        "QLineEdit:disabled { background-color: #232323; color: #9a9a9a; border-color: #404040; }"
-        "QPushButton { background-color: #303030; color: #f0f0f0; border: 1px solid #555555; padding: 3px 8px; }"
-        "QPushButton:hover { background-color: #3a3a3a; }"
-        "QPushButton:pressed { background-color: #252525; }"
-        "QRadioButton::indicator, QCheckBox::indicator { background-color: #2a2a2a; border: 1px solid #777777; }"
-        "QCheckBox::indicator:disabled { background-color: #202020; border-color: #4d4d4d; }"
         "QWidget#drag_handle { background: #2b2b2b; border-bottom: 1px solid #4a4a4a; }"
     );
 }
